@@ -1,5 +1,6 @@
 package ir.ssatari.fileservice.service;
 
+import ir.ssatari.fileservice.constant.ExceptionCodes;
 import ir.ssatari.fileservice.exception.FileStorageException;
 import ir.ssatari.fileservice.exception.MyFileNotFoundException;
 import ir.ssatari.fileservice.property.FileStorageProperties;
@@ -22,30 +23,22 @@ public class FileStorageService {
     private final Path fileStorageLocation;
 
     public FileStorageService(FileStorageProperties fileStorageProperties) {
-        this.fileStorageLocation = Paths.get(fileStorageProperties.getUploadDir())
-                .toAbsolutePath().normalize();
-
+        this.fileStorageLocation = Paths.get(fileStorageProperties.getUploadDir()).toAbsolutePath().normalize();
         try {
             Files.createDirectories(this.fileStorageLocation);
         } catch (Exception ex) {
-            throw new FileStorageException("Could not create the directory where the uploaded files will be stored.", ex);
+            throw new FileStorageException(ExceptionCodes.FILE_SRV_COULD_NOT_CREATE_DIRECTORY);
         }
     }
 
     public String storeFile(MultipartFile file) {
-        // Normalize file name
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-
         try {
-            // Check if the file's name contains invalid characters
             if (fileName.contains("..")) {
-                throw new FileStorageException("Sorry! Filename contains invalid path sequence " + fileName);
+                throw new FileStorageException(ExceptionCodes.FILE_SRV_INVALID_FILE_NAME + fileName);
             }
-
-            // Copy file to the target location (Replacing existing file with the same name)
             Path targetLocation = this.fileStorageLocation.resolve(fileName);
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-
             return fileName;
         } catch (IOException ex) {
             throw new FileStorageException("Could not store file " + fileName + ". Please try again!", ex);
@@ -59,10 +52,10 @@ public class FileStorageService {
             if (resource.exists()) {
                 return resource;
             } else {
-                throw new MyFileNotFoundException("File not found " + fileName);
+                throw new MyFileNotFoundException(ExceptionCodes.FILE_SRV_NOT_FOUND + fileName);
             }
         } catch (MalformedURLException ex) {
-            throw new MyFileNotFoundException("File not found " + fileName, ex);
+            throw new MyFileNotFoundException(ExceptionCodes.FILE_SRV_NOT_FOUND + fileName);
         }
     }
 }
