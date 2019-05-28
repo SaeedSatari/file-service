@@ -1,5 +1,7 @@
 package ir.ssatari.fileservice.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import ir.ssatari.fileservice.constant.ExceptionCodes;
 import ir.ssatari.fileservice.controller.response.UploadFileResponse;
 import ir.ssatari.fileservice.service.FileStorageService;
@@ -20,6 +22,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @Slf4j
+@Api(value = "File Controller", description = "Operations pertaining to file service")
 public class FileController {
 
     private FileStorageService fileStorageService;
@@ -29,6 +32,7 @@ public class FileController {
     }
 
     @PostMapping("/uploadFile")
+    @ApiOperation(value = "Upload single file", response = UploadFileResponse.class)
     public UploadFileResponse uploadFile(@RequestParam("file") MultipartFile file) {
         UploadFileResponse response = new UploadFileResponse();
         String fileName = fileStorageService.storeFile(file);
@@ -44,6 +48,7 @@ public class FileController {
     }
 
     @PostMapping("/uploadMultipleFiles")
+    @ApiOperation(value = "Upload list of files")
     public List<UploadFileResponse> uploadMultipleFiles(@RequestParam("files") MultipartFile[] files) {
         return Arrays.stream(files)
                 .map(this::uploadFile)
@@ -51,6 +56,7 @@ public class FileController {
     }
 
     @GetMapping("/downloadFile/{fileName:.+}")
+    @ApiOperation(value = "Download file using given file name")
     public ResponseEntity<Resource> downloadFile(@PathVariable String fileName, HttpServletRequest request) {
         Resource resource = fileStorageService.loadFileAsResource(fileName);
         String contentType = null;
