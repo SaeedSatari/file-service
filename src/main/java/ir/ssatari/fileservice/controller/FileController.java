@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import ir.ssatari.fileservice.constant.ExceptionCodes;
 import ir.ssatari.fileservice.controller.response.UploadFileResponse;
 import ir.ssatari.fileservice.service.FileStorageService;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -23,13 +24,10 @@ import java.util.stream.Collectors;
 @RestController
 @Slf4j
 @Api(value = "File Controller", description = "Operations pertaining to file service")
+@AllArgsConstructor
 public class FileController {
 
-    private FileStorageService fileStorageService;
-
-    public FileController(FileStorageService fileStorageService) {
-        this.fileStorageService = fileStorageService;
-    }
+    private final FileStorageService fileStorageService;
 
     @PostMapping("/uploadFile")
     @ApiOperation(value = "Upload single file", response = UploadFileResponse.class)
