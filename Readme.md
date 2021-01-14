@@ -16,7 +16,7 @@ Open `src/main/resources/application.properties` file and change the property `f
 file.upload-dir=E:/ir.ssatari/file-service-test
 ```
 
-**2. Run the app using maven**
+**3. Run the app using maven**
 
 ```bash
 cd file-service
